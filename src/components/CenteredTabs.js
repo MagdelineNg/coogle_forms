@@ -37,8 +37,6 @@ const CenteredTabs = (props) => {
           <TabList
             onChange={handleChange}
             TabIndicatorProps={{ sx: { bgcolor: "#4C2B87" } }}
-            textColor="#3C4043"
-            indicateColor="#4C2B87"
             centered
           >
             <Tab label="Questions" className="tab" value="1" />
