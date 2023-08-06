@@ -1,0 +1,127 @@
+.question-form {
+  background-color: #f4f4f9;
+  height: 100%;
+  padding-bottom: 30px;
+}
+
+.section {
+  margin: auto;
+  width: 90%;
+}
+
+.question-card {
+  margin-top: 15px;
+}
+
+.question-form-top {
+  background-color: white;
+  border-top: 8px solid rgb(103, 58, 183);
+  border-radius: 8px;
+  padding: 30px 25px;
+}
+
+.question-boxes {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.add-question {
+  background-color: white;
+  border-radius: 8px;
+  padding: 25px 22px;
+  display: flex;
+  flex-direction: column;
+  padding-top: 0px;
+  width: 93%;
+  margin-left: 10px;
+}
+
+.add-question-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.question {
+  box-sizing: border-box;
+  margin-top: 10px;
+  font-size: 15px;
+  flex: 1;
+  line-height: 40px;
+  width: 40%;
+  border: none;
+  outline: none;
+  color: black;
+  margin-right: 10px;
+}
+
+.question:focus {
+  border-bottom: 1px solid rgb(103, 58, 183);
+  background-color: #f4f4f9;
+}
+
+.select {
+  height: 40px;
+  width: 230px;
+  border: 1.5px solid #f4f4f9;
+  padding: 5px 15px;
+  margin-left: 10px;
+  margin-right: 10px;
+  border-radius: 3px;
+}
+
+.add-question-body {
+  display: flex;
+  align-items: center;
+}
+
+.text-input{
+    outline:none;
+    border:none;
+    height:40px;
+    width:490px;
+    color:#202124;
+    letter-spacing: .2px;
+    font-size: 13px;
+}
+
+.text-input:focus{
+    border-bottom: 1.5px solid rgb(103,58,183)
+}
+
+.question-form-top-name {
+  box-sizing: border-box;
+  border: none;
+  font-family: "Google Sans";
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 40px;
+  width: 100%;
+  outline: none;
+  border-bottom: 1px solid #f4f4f9;
+  color: black;
+  height: 35px;
+}
+
+.question-form-top-desc {
+  margin-top: 10px;
+  box-sizing: border-box;
+  border: none;
+  font-family: "Google Sans";
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 40px;
+  width: 100%;
+  outline: none;
+  border-bottom: 1px solid #f4f4f9;
+  color: black;
+  height: 20px;
+}
+
+.option-text {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #202124;
+}

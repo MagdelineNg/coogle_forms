@@ -1,0 +1,47 @@
+.template-section{
+background-color: #f4f4f9;
+padding-bottom: 40px;
+padding-top: 7px;
+flex: 1;
+flex-direction: start;
+}
+
+.newform-top{
+    margin-left: 160px;
+    margin-right: 160px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.newform-body{
+    display: flex;
+    margin-left: 130px;
+}
+
+.card{
+    margin-top:15px;
+    margin-left:20px;
+}
+
+.card-image{
+    box-sizing: border-box;
+    height: 120px;
+    width: 140px;
+    cursor: pointer;
+    border-radius: 2px;
+    border: 0.2px solid #fffdf7;
+}
+
+.card-image-title{
+    font-size: 14px;
+    margin-top: 2px;
+    color: #202124;
+    font-weight: 500;
+    display: flex;
+}
+
+.card-image:hover{
+    border: 1px solid #6e2f94;
+}
