@@ -21,6 +21,7 @@ import {
   Select,
   Switch,
 } from "@mui/material";
+import { CloseOutlined } from "@mui/icons-material";
 
 const Questionform = (props) => {
   const [questions, setQuestions] = useState([
@@ -51,6 +52,35 @@ const Questionform = (props) => {
     setQuestions(newQuestions);
     console.log(newQuestions);
   };
+
+  function changeOptionValue(text,ind,optionInd) {
+    var newQuestions = [...questions];
+    newQuestions[ind].options[optionInd].optionText = text;
+    setQuestions(newQuestions);
+    console.log(newQuestions);
+  }
+
+  function removeOption(ind,optionInd){
+    var newQuestions = [...questions];
+    if (newQuestions[ind].options.length > 1){
+      console.log("removing option...")
+      newQuestions[ind].options.splice(optionInd, 1)
+      setQuestions(newQuestions);
+      console.log(questions);
+    }
+  }
+
+  function addOption(ind){
+    var newQuestions = [...questions];
+    const numOfOptions = newQuestions[ind].options.length
+    if (numOfOptions < 5){
+      newQuestions[ind].options.push({optionText: "Option " + (numOfOptions+1)})
+      setQuestions(newQuestions);
+      console.log(newQuestions);
+    } else {
+      console.log("Maximum of 5 options allowed.")
+    }
+  }
 
   const questionsUI = () => {
     return questions.map((ques, i) => (
@@ -154,8 +184,12 @@ const Questionform = (props) => {
                             className="text-input"
                             placeholder="option"
                             value={op.optionText}
+                            onChange={(e) => {changeOptionValue(e.target.value,i,j)}}
                           ></input>
                         </div>
+                        <IconButton aria-label="delete" onClick={()=>removeOption(i,j)}>
+                          <CloseOutlined />
+                        </IconButton>
                       </div>
                     ))}
                     <div>
@@ -184,7 +218,7 @@ const Questionform = (props) => {
                                 <input
                                   type="text"
                                   className="text-input"
-                                  placeholder="Add option"
+                                  placeholder="Add other"
                                   style={{width:"80px"}}
                                 ></input>
                                 or
@@ -196,8 +230,9 @@ const Questionform = (props) => {
                                     fontSize: "600",
                                     marginLeft: "5px"
                                   }}
+                                  onClick={addOption(i)}
                                 >
-                                  Add other
+                                  Add option
                                 </Button>
                               </div>
                             }
