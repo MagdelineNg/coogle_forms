@@ -24,6 +24,10 @@
   border-left: 6px solid #4285f4;
 }
 
+.add-question-icon:hover{
+  cursor:pointer;
+}
+
 .question-form-top {
   background-color: white;
   border-top: 8px solid rgb(103, 58, 183);

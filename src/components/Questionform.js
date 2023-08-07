@@ -8,7 +8,7 @@ import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
 import FilterNoneOutlinedIcon from "@mui/icons-material/FilterNoneOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import "./Questionform.css";
 import {
   Accordion,
@@ -22,24 +22,19 @@ import {
   Select,
   Switch,
 } from "@mui/material";
-import { CloseOutlined, DragIndicator } from "@mui/icons-material";
 import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-} from "react-beautiful-dnd";
+  CloseOutlined,
+  DragIndicator,
+  QuestionMarkRounded,
+} from "@mui/icons-material";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const Questionform = (props) => {
   const [questions, setQuestions] = useState([
     {
-      questionText: "Question?",
+      questionText: "Untitled Question",
       questionType: "radio",
-      options: [
-        { optionText: "option 1" },
-        { optionText: "option 2" },
-        { optionText: "option 3" },
-        { optionText: "option 4" },
-      ],
+      options: [{ optionText: "Option 1" }],
       open: true,
       required: false,
     },
@@ -78,7 +73,7 @@ const Questionform = (props) => {
   }
 
   function addOption(ind) {
-    var newQuestions = [...questions];
+    let newQuestions = [...questions];
     const numOfOptions = newQuestions[ind].options.length;
     if (numOfOptions < 5) {
       newQuestions[ind].options.push({
@@ -91,17 +86,72 @@ const Questionform = (props) => {
     }
   }
 
+  function copyQuestion(quesInd) {
+   // expandCloseAll();
+    let curQuestions = [...questions];
+    let newQuestion = {...curQuestions[quesInd]};
+    setQuestions([...curQuestions, newQuestion]);
+  }
+
+  function deleteQuestion(quesInd) {
+    let curQuestions = [...questions];
+    console.log("1." ,curQuestions)
+    if (curQuestions.length > 1) {
+      curQuestions.splice(quesInd, 1);
+      setQuestions(curQuestions);
+    }
+    console.log("2.", questions)
+
+  }
+
+  function toggleRequiredQuestion(quesInd) {
+    let curQuestions = [...questions];
+    curQuestions[quesInd].required = !curQuestions[quesInd].required;
+    console.log("required changed to : ", curQuestions[quesInd].required);
+    setQuestions(curQuestions);
+  }
+
+  function addNewQuestion() {
+    expandCloseAll();
+    setQuestions([
+      ...questions,
+      {
+        questionText: "Question",
+        questionType: "radio",
+        options: [{ optionText: "Option 1" }],
+        open: true,
+        required: false,
+      },
+    ]);
+  }
+
+  function expandCloseAll() {
+    let curQuestions = [...questions];
+    for (const element of curQuestions) {
+      element.open = false;
+    }
+    setQuestions(curQuestions);
+  }
+
+  function handleExpand(quesInd) {
+    let curQuestions = [...questions];
+    for (let j = 0; j < curQuestions.length; j++) {
+      curQuestions[j].open = quesInd === j ? true : false;
+    }
+    setQuestions(curQuestions);
+  }
+
   const reorder = (list, startIndex, endIndex) => {
-    const result = Array.from(list)
-    const [removed] = result.splice(startIndex, 1)
-    result.splice(endIndex, 0, removed)
-    return result
-}
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+    return result;
+  };
 
   function onDragEnd(result) {
     if (!result.destination) return;
 
-    var item = [...questions];
+    let item = [...questions];
     const newItem = reorder(
       item,
       result.source.index,
@@ -124,19 +174,19 @@ const Questionform = (props) => {
                 <div style={{ width: "100%", marginBottom: "0px" }}>
                   <DragIndicatorIcon
                     style={{
-                      transform: "rotate(-90deg",
+                      transform: "rotate(-90deg)",
                       color: "#DAE0E2",
-                      position: "relative",
                       left: "300px",
                     }}
                     fontSize="small"
                   />
                 </div>
-                <div className="question-row" key={quesInd}>
+                <div className="question-row">
                   <div className="question-card">
                     <Accordion
                       expanded={ques.open}
                       className={ques.open ? "add-border" : ""}
+                      onChange={() => {handleExpand(quesInd)}} 
                     >
                       <AccordionSummary style={{ width: "100%" }}>
                         {!ques.open ? (
@@ -328,13 +378,27 @@ const Questionform = (props) => {
                                 )}
                               </div>
                               <div className="add-question-footer">
-                                <IconButton aria-label="Copy">
+                                <IconButton
+                                  aria-label="Copy"
+                                  onClick={() => {
+                                    copyQuestion(quesInd);
+                                  }}
+                                >
                                   <FilterNoneOutlinedIcon />
                                 </IconButton>
-                                <IconButton aria-label="Delete">
+                                <IconButton
+                                  aria-label="Delete"
+                                  onClick={() => {
+                                    deleteQuestion(quesInd);
+                                  }}
+                                >
                                   <DeleteOutlineOutlinedIcon />
                                 </IconButton>
-                                <IconButton>
+                                <IconButton
+                                  onClick={() => {
+                                    toggleRequiredQuestion(quesInd);
+                                  }}
+                                >
                                   <span
                                     style={{
                                       color: "#5f6368",
@@ -343,7 +407,15 @@ const Questionform = (props) => {
                                   >
                                     Required
                                   </span>
-                                  <Switch name="checked" defaultChecked />
+                                  <Switch
+                                    name="checked"
+                                    checked={ques.required}
+                                    aria-label={
+                                      ques.required
+                                        ? "This question is required."
+                                        : "This question is not required."
+                                    }
+                                  />
                                 </IconButton>
                               </div>
                             </AccordionDetails>
@@ -353,7 +425,12 @@ const Questionform = (props) => {
                     </Accordion>
                   </div>
                   <div className="question-edit">
-                    <AddCircleOutlineOutlinedIcon className="edit" />
+                    <AddCircleOutlineOutlinedIcon
+                      className="add-question-icon"
+                      onClick={() => {
+                        addNewQuestion();
+                      }}
+                    />
                   </div>
                 </div>
               </div>
