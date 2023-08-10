@@ -2,6 +2,7 @@
 /src/backend/files/*
 /src/backend/node_modules
 /src/backend/files/.DS_Store
+src/backend/responses/*
 
 # dependencies
 /node_modules
