@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
+import { useParams } from "react-router-dom";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
 import CropOriginalIcon from "@mui/icons-material/CropOriginal";
 import ShortTextIcon from "@mui/icons-material/ShortText";
@@ -9,27 +9,30 @@ import FilterNoneOutlinedIcon from "@mui/icons-material/FilterNoneOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import TocIcon from "@mui/icons-material/Toc";
 import "./Questionform.css";
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
   FormControlLabel,
-  Icon,
   IconButton,
   Button,
+  Menu,
   MenuItem,
   Select,
   Switch,
 } from "@mui/material";
-import {
-  CloseOutlined,
-  DragIndicator,
-  QuestionMarkRounded,
-} from "@mui/icons-material";
+import { CloseOutlined } from "@mui/icons-material";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import axios from "axios";
+import { actionTypes } from "./reducer";
+import { useStateValue } from "./StateProvider";
 
 const Questionform = (props) => {
+  const [{}, dispatch] = useStateValue()
+
   const [questions, setQuestions] = useState([
     {
       questionText: "Untitled Question",
@@ -37,38 +40,114 @@ const Questionform = (props) => {
       options: [{ optionText: "Option 1" }],
       open: true,
       required: false,
+      section: false,
     },
   ]);
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const moreVertMenuOptions = [
+    "Description",
+    //"Description"    -> to be implemented
+    "Go to section based on answer",
+  ];
+
+  const [docName, setDocName] = useState("Untitled Form");
+  const [docDesc, setDocDesc] = useState("Form description");
+  let maxSectionNumber = 0;
+
+  questions.forEach(question => {
+    if (question.section && question.sectionNumber > maxSectionNumber) {
+      maxSectionNumber = question.sectionNumber;
+    }
+  });
+
+  const {id} = useParams();
+  // const urlPath = useLocation();
+  // const formId = urlPath.pathname.split("/").pop()
+
+  useEffect(() => {
+    const addData = async() => {
+      var request = await axios.get(`http://localhost:9000/data/${id}`)
+      const {questions, doc_name, doc_desc} = request.data  //obj destructuring referring to properties set in commitToDB()
+      
+      setDocName(doc_name)
+      setDocDesc(doc_desc)
+      setQuestions(questions)
+
+      dispatch({
+        type: actionTypes.SET_DOC_NAME,
+        docName: doc_name
+      })
+      dispatch({
+        type: actionTypes.SET_DOC_DESC,
+        docDesc: doc_desc
+      })
+      dispatch({
+        type: actionTypes.SET_QUESTIONS,
+        questions: questions
+      })
+    }
+    addData()
+  }, [])
+
+  const commitToDB = () => {
+    axios.post(`http://localhost:9000/add_questions/${id}`, {
+      "doc_name": docName,
+      "doc_desc": docDesc,
+      "questions": questions
+    })
+  };
+
+  const showMoreOptions = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const open = Boolean(anchorEl);
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleMenuOption = (quesInd) => {
+    let newQuestions = [...questions];
+  };
 
   const changeQuestion = (text, quesInd) => {
-    var newQuestions = [...questions];
+    let newQuestions = [...questions];
     newQuestions[quesInd].questionText = text;
     setQuestions(newQuestions);
-    console.log(newQuestions);
+    // console.log(newQuestions);
+  };
+
+  const changeSection = (text, quesInd) => {
+    let newQuestions = [...questions];
+    newQuestions[quesInd].questionText = text;
+    setQuestions(newQuestions);
+    // console.log(newQuestions);
   };
 
   const addQuestionType = (quesInd, type) => {
-    var newQuestions = [...questions];
+    let newQuestions = [...questions];
     newQuestions[quesInd].questionType = type;
     setQuestions(newQuestions);
-    console.log(newQuestions);
+    // console.log(newQuestions);
   };
 
   function changeOptionValue(text, quesInd, optionInd) {
-    var newQuestions = [...questions];
+    let newQuestions = [...questions];
     newQuestions[quesInd].options[optionInd].optionText = text;
     setQuestions(newQuestions);
-    console.log(newQuestions);
+    // console.log(newQuestions);
   }
 
   function removeOption(quesInd, optionInd) {
-    console.log(quesInd, optionInd);
+    // console.log(quesInd, optionInd);
     var newQuestions = [...questions];
     if (newQuestions[quesInd].options.length > 1) {
       console.log("removing option...");
       newQuestions[quesInd].options.splice(optionInd, 1);
       setQuestions(newQuestions);
-      console.log(questions);
+      // console.log(questions);
     }
   }
 
@@ -80,28 +159,37 @@ const Questionform = (props) => {
         optionText: "Option " + (numOfOptions + 1),
       });
       setQuestions(newQuestions);
-      console.log(newQuestions);
+      // console.log(newQuestions);
     } else {
       console.log("Maximum of 5 options allowed.");
     }
   }
 
-  function copyQuestion(quesInd) {
-   // expandCloseAll();
+  function expandCloseAll() {
     let curQuestions = [...questions];
-    let newQuestion = {...curQuestions[quesInd]};
+    for (const element of curQuestions) {
+      console.log("expandCloseAll element: ", element);
+      element.open = false;
+    }
+    setQuestions(curQuestions);
+  }
+
+  function copyQuestion(quesInd) {
+    expandCloseAll();
+    let curQuestions = [...questions];
+    // let newQuestion = curQuestions[i]  -> doesn't create new obj, just assigns ref to existing question obj in array, hence change made to newQ will also affect originalQ
+    let newQuestion = { ...curQuestions[quesInd] }; //use spread operator to create new question object with same properties without affecting original question
     setQuestions([...curQuestions, newQuestion]);
   }
 
   function deleteQuestion(quesInd) {
     let curQuestions = [...questions];
-    console.log("1." ,curQuestions)
+    console.log("1.", curQuestions);
     if (curQuestions.length > 1) {
       curQuestions.splice(quesInd, 1);
       setQuestions(curQuestions);
     }
-    console.log("2.", questions)
-
+    console.log("2.", questions);
   }
 
   function toggleRequiredQuestion(quesInd) {
@@ -125,18 +213,37 @@ const Questionform = (props) => {
     ]);
   }
 
-  function expandCloseAll() {
+  function addNewSection() {
+    expandCloseAll();
+
     let curQuestions = [...questions];
-    for (const element of curQuestions) {
-      element.open = false;
-    }
-    setQuestions(curQuestions);
+    curQuestions[0].section = true;
+    curQuestions[0].sectionNumber = 1;
+
+    setQuestions([
+      ...curQuestions,
+      {
+        questionText: "Untitled Section",
+        open: true,
+        section: true,
+        sectionNumber: maxSectionNumber + 1,
+      },
+    ]);
   }
+
+  const navigateToSection = (fromSectionNum, toSectionNum) => {
+    console.log("from ", fromSectionNum, " to ", toSectionNum);
+  };
 
   function handleExpand(quesInd) {
     let curQuestions = [...questions];
     for (let j = 0; j < curQuestions.length; j++) {
-      curQuestions[j].open = quesInd === j ? true : false;
+      //curQuestions[j].open = quesInd === j ? true : false;
+      if (quesInd === j) {
+        curQuestions[j].open = true;
+      } else {
+        curQuestions[j].open = false;
+      }
     }
     setQuestions(curQuestions);
   }
@@ -162,7 +269,12 @@ const Questionform = (props) => {
 
   const questionsUI = () => {
     return questions.map((ques, quesInd) => (
-      <Draggable key={quesInd} draggableId={quesInd + "id"} index={quesInd}>
+      <Draggable
+        key={quesInd}
+        draggableId={quesInd + "id"}
+        index={quesInd}
+        isDragDisabled={ques.section === true ? true : false}
+      >
         {(provided, snapshot) => (
           <div
             ref={provided.innerRef}
@@ -183,46 +295,132 @@ const Questionform = (props) => {
                 </div>
                 <div className="question-row">
                   <div className="question-card">
-                    <Accordion
-                      expanded={ques.open}
-                      className={ques.open ? "add-border" : ""}
-                      onChange={() => {handleExpand(quesInd)}} 
-                    >
-                      <AccordionSummary style={{ width: "100%" }}>
-                        {!ques.open ? (
-                          <div className="question-text">
-                            {quesInd + 1}. {ques.questionText}
-                            {ques.options.map((op, optionInd) => (
-                              <div
-                                key={optionInd}
-                                style={{ marginTop: "15px" }}
-                              >
-                                <div style={{ display: "flex" }}>
-                                  <FormControlLabel
-                                    style={{
-                                      marginLeft: "5px",
-                                      marginBottom: "5px",
-                                    }}
-                                    disabled
-                                    control={
-                                      <input
-                                        type={ques.questionType}
-                                        style={{ marginRight: "3px" }}
-                                        required={ques.required}
-                                      />
-                                    }
-                                    label={
-                                      <div className="option-text">
-                                        {op.optionText}
-                                      </div>
-                                    }
-                                  />
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
+                    {!ques.questionType ? (
+                      <div>
+                        <div>
+                          After section {ques.sectionNumber - 1}
+                          <Select
+                            className="select"
+                            style={{ color: "#5f6368", fontSize: "13px" }}
+                            defaultValue=""
+                          >
+                            {Array.from(
+                              {
+                                length: maxSectionNumber - ques.sectionNumber + 1,
+                              },
+                              (_, index) => (
+                                <MenuItem
+                                  id="section-choice"
+                                  value="Text"
+                                  onClick={() => {
+                                    navigateToSection(
+                                      ques.sectionNumber-1,
+                                      ques.sectionNumber + index
+                                    ); //arg: from section, to section
+                                  }}
+                                >
+                                  Go to section {ques.sectionNumber + index}
+                                </MenuItem>
+                              )
+                            )}
+                          </Select>
+                        </div>
+                        <Accordion
+                          expanded={true}
+                          className="section-accordion"
+                          onChange={() => {
+                            handleExpand(quesInd);
+                          }}
+                        >
+                          {ques.section && (
+                            <div className="section-header">
+                              Section {ques.sectionNumber} of {maxSectionNumber}{" "}
+                            </div>
+                          )}
                           <div className="question-boxes">
+                            <AccordionDetails className="add-question">
+                              <div className="add-question-top">
+                                <input
+                                  type="text"
+                                  className="question"
+                                  placeholder="Question"
+                                  value={ques.questionText}
+                                  onChange={(e) =>
+                                    changeSection(e.target.value, quesInd)}
+                                ></input>
+                              </div>
+                            </AccordionDetails>
+                          </div>
+                        </Accordion>
+                      </div>
+                    ) : (
+                      <Accordion
+                        expanded={ques.open}
+                        className={ques.open ? "add-border" : ""}
+                        onChange={() => {
+                          handleExpand(quesInd);
+                        }}
+                      >
+                        <AccordionSummary style={{ width: "100%" }}>
+                          {!ques.open ? (
+                            <div>
+                              {ques.section && (
+                                <div
+                                  className="section-header"
+                                  style={{ marginBottom: "10px" }}
+                                >
+                                  {" "}
+                                  Section {ques.sectionNumber} of{" "}
+                                  {maxSectionNumber}{" "}
+                                </div>
+                              )}
+                              <div className="question-text">
+                                 {ques.questionText}
+                                {ques.options.map((op, optionInd) => (
+                                  <div
+                                    key={optionInd}
+                                    style={{ marginTop: "15px" }}
+                                  >
+                                    <div style={{ display: "flex" }}>
+                                      <FormControlLabel
+                                        style={{
+                                          marginLeft: "5px",
+                                          marginBottom: "5px",
+                                        }}
+                                        disabled
+                                        control={
+                                          <input
+                                            type={ques.questionType}
+                                            style={{ marginRight: "3px" }}
+                                            required={ques.required}
+                                          />
+                                        }
+                                        label={
+                                          <div className="option-text">
+                                            {op.optionText}
+                                          </div>
+                                        }
+                                      />
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ) : (
+                            ""
+                          )}
+                        </AccordionSummary>
+                        {ques.open ? (
+                          <div className="question-boxes">
+                            {ques.section && (
+                              <div
+                                className="section-header"
+                                style={{ marginBottom: "10px" }}
+                              >
+                                {" "}
+                                Section {ques.sectionNumber} of {maxSectionNumber}{" "}
+                              </div>
+                            )}
                             <AccordionDetails className="add-question">
                               <div className="add-question-top">
                                 <input
@@ -417,18 +615,49 @@ const Questionform = (props) => {
                                     }
                                   />
                                 </IconButton>
+                                <IconButton
+                                  aria-label="more options"
+                                  onClick={showMoreOptions}
+                                  aria-controls="long-menu"
+                                >
+                                  <MoreVertIcon />
+                                </IconButton>
+                                <Menu
+                                  anchorEl={anchorEl}
+                                  keepMounted
+                                  onClose={handleClose}
+                                  onClick={handleClose}
+                                  open={open}
+                                >
+                                  {moreVertMenuOptions.map((option) => (
+                                    <MenuItem
+                                      key={option}
+                                      onClick={handleMenuOption(quesInd)}
+                                    >
+                                      {option}
+                                    </MenuItem>
+                                  ))}
+                                </Menu>
                               </div>
                             </AccordionDetails>
                           </div>
+                        ) : (
+                          ""
                         )}
-                      </AccordionSummary>
-                    </Accordion>
+                      </Accordion>
+                    )}
                   </div>
                   <div className="question-edit">
                     <AddCircleOutlineOutlinedIcon
                       className="add-question-icon"
                       onClick={() => {
                         addNewQuestion();
+                      }}
+                    />
+                    <TocIcon
+                      className="add-section-icon"
+                      onClick={() => {
+                        addNewSection();
                       }}
                     />
                   </div>
@@ -445,17 +674,21 @@ const Questionform = (props) => {
     <div className="question-form">
       <div className="section">
         <div className="question-title-section">
-          <div className="question-form-top">
+          <div className="question-form-top" style={{ marginTop: "20px" }}>
             <input
               type="text"
               className="question-form-top-name"
               style={{ color: "black" }}
-              placeholder="Untitled document"
+              placeholder="Untitled form"
+              value={docName}
+              onChange={(e) => setDocName(e.target.value)}
             ></input>
             <input
               type="text"
               className="question-form-top-desc"
               placeholder="Form description"
+              value={docDesc}
+              onChange={(e) => setDocDesc(e.target.value)}
             ></input>
           </div>
         </div>
@@ -470,43 +703,18 @@ const Questionform = (props) => {
           </Droppable>
         </DragDropContext>
       </div>
-      {/* <Accordion expanded="false">
-        <AccordionSummary>
-          <div>questionOpen</div>
-        </AccordionSummary>
-      </Accordion>;*/}
+      <div className="save-form">
+        <Button
+          variant="contained"
+          onClick={commitToDB}
+          color="primary"
+          style={{ fontSize: "14px" }}
+        >
+          Save
+        </Button>
+      </div>
     </div>
   );
 };
 
 export default Questionform;
-
-{
-  /* <div className="question-boxes">
-<AccordionDetails className="add_question">
-  <div className="add-question-top">
-    <input
-      type="text"
-      className="question"
-      placeholder="Question"
-      value={ques.questionText}
-    ></input>
-    <CropOriginalIcon style={{ color: "#5f6368" }} />
-    <Select
-      className="select"
-      style={{ color: "#5f6368", fontSize: "13px" }}
-    >
-      <MenuItem id="text" value="Text">
-        Paragraph
-      </MenuItem>
-      <MenuItem id="checkbox" value="Checkbox">
-        Checkboxes
-      </MenuItem>
-      <MenuItem id="radio" value="Radio">
-        Multiple choice
-      </MenuItem>
-    </Select>
-  </div>
-</AccordionDetails>
-</div> */
-}

@@ -4,12 +4,31 @@ import blank from "../img/forms-blank-googlecolors.png";
 import "./Newform.css";
 import Mainbody from "./Mainbody";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const NewForm = () => {
   const navigate = useNavigate();
 
   const CreateForm = () => {
     const id = uuidv4();
+
+    var question = [
+      {
+        questionText: "Untitled Question",
+        questionType: "radio",
+        options: [{ optionText: "Option 1" }],
+        open: true,
+        required: false,
+        section: false,
+      },
+    ];
+
+    axios.post(`http://localhost:9000/add_questions/${id}`, {
+      doc_name: "Untitled form",
+      doc_desc: "Form description",
+      questions: question,
+    });
+
     navigate("/form/" + id);
   };
 
@@ -24,7 +43,7 @@ const NewForm = () => {
         </div>
         <div className="newform-body">
           <div className="card" onClick={CreateForm}>
-            <img src={blank} alt="no image" className="card-image" />
+            <img src={blank} alt="" className="card-image" />
             <p className="card-image-title">Blank</p>
           </div>
         </div>
