@@ -4,6 +4,8 @@ const path = require("path");
 var cors = require("cors");
 var bodyParser = require("body-parser");
 const Excel = require("exceljs");
+var XLSX = require("xlsx");
+
 const { QuestionAnswer, ElevatorSharp } = require("@mui/icons-material");
 const app = express();
 
@@ -70,72 +72,96 @@ app.post("/survey_response/:form_name", async (req, res) => {
     const workbook = new Excel.Workbook();
     const responseCsvPath = `./responses/${formName}.csv`;
     if (fs.existsSync(responseCsvPath)) {
-      workbook.csv.readFile(responseCsvPath).then(async function () {
-        // var worksheet = workbook.csv.getWorksheet(`${formName}`);
-        var worksheet = await workbook.csv.readFile(responseCsvPath);
+      const workbook = XLSX.readFile(`./responses/${fileName}.csv`);
+      const sheet = workbook.Sheets[fileName];
 
-        // var lastRow = worksheet.lastRow;
-        // var getRowInsert = worksheet.getRow(++lastRow.number);
+      //convert answer_data json to aoa
+      answerAoa = [new Date().toISOString(), ...Object.values(answer_data)];
 
-        // getRowInsert.values = {
-        //   timestamp: date,
-        //   ...formResponse.answer_data,
-        // };
-        // console.log("getrowinsert: " + JSON.stringify(getRowInsert.values));
-        // getRowInsert.commit();
+      //add multiple cell values to WS
+      XLSX.utils.sheet_add_aoa(worksheet, [answerAoa], { origin: -1 });
 
-        // getRowInsert.getCell('A').value = 'yo';
-        // getRowInsert.commit();
-        // getRowInsert.values = {
-        //   timestamp: date,
-        //   ...formResponse.answer_data,
-        // }
-        const rows = [
-          [new Date(), "test"], // row by array
-          [new Date(), "test 2"]
-        ];
-        // add new rows and return them as array of row objects
-        const newRows = worksheet.addRows(rows)
-
-        console.log({
-          timestamp: date,
-          ...formResponse.answer_data[0],
-        });
-
-        worksheet
-          .addRow({
-            timestamp: date,
-            ...formResponse.answer_data[0],
-          })
-      });
-
-      workbook.csv.writeFile(responseCsvPath);
+      XLSX.writeFile(workbook, `./responses/${fileName}.csv`);
+      // workbook.csv.readFile(responseCsvPath).then(async function () {
+      //   // var worksheet = workbook.csv.getWorksheet(`${formName}`);
+      //   var worksheet = await workbook.csv.readFile(responseCsvPath);
+      //   // var lastRow = worksheet.lastRow;
+      //   // var getRowInsert = worksheet.getRow(++lastRow.number);
+      //   // getRowInsert.values = {
+      //   //   timestamp: date,
+      //   //   ...formResponse.answer_data,
+      //   // };
+      //   // console.log("getrowinsert: " + JSON.stringify(getRowInsert.values));
+      //   // getRowInsert.commit();
+      //   // getRowInsert.getCell('A').value = 'yo';
+      //   // getRowInsert.commit();
+      //   // getRowInsert.values = {
+      //   //   timestamp: date,
+      //   //   ...formResponse.answer_data,
+      //   // }
+      //   const rows = [
+      //     [new Date(), "test"], // row by array
+      //     [new Date(), "test 2"]
+      //   ];
+      //   // add new rows and return them as array of row objects
+      //   const newRows = worksheet.addRows(rows)
+      //   console.log({
+      //     timestamp: date,
+      //     ...formResponse.answer_data[0],
+      //   });
+      //   worksheet
+      //     .addRow({
+      //       timestamp: date,
+      //       ...formResponse.answer_data[0],
+      //     })
+      // });
+      // workbook.csv.writeFile(responseCsvPath);
     } else {
-      let worksheet = workbook.addWorksheet(`${formName}`);
+      console.log("answer_data if new file: ", formResponse.answer_data[0]);
+      const worksheet = XLSX.utils.json_to_sheet(formResponse.answer_data[0]);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, `${formName}`);
 
-      worksheet.columns = [
-        {
-          header: "Timestamp",
-          key: "timestamp",
-          style: { numFmt: "mm/dd/yyyy\\ h:mm:ss\\ AM/PM" },
-        },
-        ...formResponse.column,
-      ];
-      worksheet.columns.forEach((col) => {
-        col.width = col.header.length < 12 ? 12 : col.header.length;
-      });
+      /* fix headers */
 
-      formResponse.answer_data.forEach((ans, ind) => {
-        console.log("ans: ", ans);
-        worksheet.addRow({
-          timestamp: date,
-          ...ans,
-        });
-      });
+      headers = Object.keys(answer_data);
+      console.log("headers for new file: ", header);
+      XLSX.utils.sheet_add_aoa(worksheet, [[headers]], { origin: "A1" });
 
-      worksheet.getRow(1).font = { bold: true };
+      const max_width = answer_data.reduce(
+        (w, r) => Math.max(w, r.name.length),
+        10
+      );
+      worksheet["!cols"] = [{ wch: max_width }];
 
-      workbook.csv.writeFile(responseCsvPath);
+      /* create an XLSX file and try to save to Presidents.xlsx */
+      XLSX.writeFile(workbook, `./responses/${formName}.csv`);
+
+      // let worksheet = workbook.addWorksheet(`${formName}`);
+
+      // worksheet.columns = [
+      //   {
+      //     header: "Timestamp",
+      //     key: "timestamp",
+      //     style: { numFmt: "mm/dd/yyyy\\ h:mm:ss\\ AM/PM" },
+      //   },
+      //   ...formResponse.column,
+      // ];
+      // worksheet.columns.forEach((col) => {
+      //   col.width = col.header.length < 12 ? 12 : col.header.length;
+      // });
+
+      // formResponse.answer_data.forEach((ans, ind) => {
+      //   console.log("ans: ", ans);
+      //   worksheet.addRow({
+      //     timestamp: date,
+      //     ...ans,
+      //   });
+      // });
+
+      // worksheet.getRow(1).font = { bold: true };
+
+      // workbook.csv.writeFile(responseCsvPath);
     }
   } catch (err) {
     console.error("Error submitting response: " + err);
