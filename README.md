@@ -24,6 +24,13 @@ Navigate to the directory where the Excel file is at(shown in "Responses" tab pa
 
 </details>
 
+### Features
+- Create form
+- Add unlimited questions and maximum of 5 options per question
+- Delete and duplicating the question
+- Drag and Drop questions to sort them in the preferred order
+- Group questions by section
+- Submit response to the form
 
 ## Built using 
 - ReactJS and MaterialUI (frontend)
