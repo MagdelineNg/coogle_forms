@@ -1,7 +1,7 @@
 # Coogle Forms
 A survey form system. (WIP)
 
-### Demo application
+## Demo application
 A customer can build a survey by clicking on "Blank".
 
 ![Survey layout](https://drive.google.com/uc?export=view&id=1NdTT1QW9DhprjX0OaQM5d3phTtqJtjgB)
@@ -24,7 +24,7 @@ Navigate to the directory where the Excel file is at(shown in "Responses" tab pa
 
 </details>
 
-### Features
+## Features
 - Create form
 - Add unlimited questions and maximum of 5 options per question
 - Delete and duplicating the question
