@@ -16,8 +16,8 @@ Customer can save the form after layout is completed.
 Anyone can be directed to the user form and fill up their response. 
 ![View user form](https://drive.google.com/uc?export=view&id=1fr18xyWjHRanDzgEsRSCbMFag8_aKpcC)
 
-Click on "View in Excel" to view responses stored in an Excel file with the formId as its name(default).
-
+Click on "View in Excel" to view responses stored in an Excel file with the formId as its name(default).  -> WIP (excel is retrievable in `./src/backend/responses` now)
+![Recoard all responses](https://drive.google.com/uc?export=view&id=1aaH7Qs_yXIMa6-OyMGgwviF_5iTyeEWO)
 
 </details>
 
