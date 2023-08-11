@@ -23,6 +23,7 @@ import {
   MenuItem,
   Select,
   Switch,
+  Tooltip,
 } from "@mui/material";
 import { CloseOutlined } from "@mui/icons-material";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -31,7 +32,7 @@ import { actionTypes } from "./reducer";
 import { useStateValue } from "./StateProvider";
 
 const Questionform = (props) => {
-  const [{}, dispatch] = useStateValue()
+  const [{}, dispatch] = useStateValue();
 
   const [questions, setQuestions] = useState([
     {
@@ -55,47 +56,49 @@ const Questionform = (props) => {
   const [docDesc, setDocDesc] = useState("Form description");
   let maxSectionNumber = 0;
 
-  questions.forEach(question => {
+  questions.forEach((question) => {
     if (question.section && question.sectionNumber > maxSectionNumber) {
       maxSectionNumber = question.sectionNumber;
     }
   });
 
-  const {id} = useParams();
+  const { id } = useParams();
   // const urlPath = useLocation();
   // const formId = urlPath.pathname.split("/").pop()
 
   useEffect(() => {
-    const addData = async() => {
-      var request = await axios.get(`http://localhost:9000/data/${id}`)
-      const {questions, doc_name, doc_desc} = request.data  //obj destructuring referring to properties set in commitToDB()
-      
-      setDocName(doc_name)
-      setDocDesc(doc_desc)
-      setQuestions(questions)
+    const addData = async () => {
+      var request = await axios.get(`http://localhost:9000/data/${id}`);
+      const { questions, doc_name, doc_desc } = request.data; //obj destructuring referring to properties set in commitToDB()
+
+      setDocName(doc_name);
+      setDocDesc(doc_desc);
+      setQuestions(questions);
 
       dispatch({
         type: actionTypes.SET_DOC_NAME,
-        docName: doc_name
-      })
+        docName: doc_name,
+      });
       dispatch({
         type: actionTypes.SET_DOC_DESC,
-        docDesc: doc_desc
-      })
+        docDesc: doc_desc,
+      });
       dispatch({
         type: actionTypes.SET_QUESTIONS,
-        questions: questions
-      })
-    }
-    addData()
-  }, [])
+        questions: questions,
+      });
+
+      console.log("addData qns: ", questions)
+    };
+    addData();
+  }, []);
 
   const commitToDB = () => {
     axios.post(`http://localhost:9000/add_questions/${id}`, {
-      "doc_name": docName,
-      "doc_desc": docDesc,
-      "questions": questions
-    })
+      doc_name: docName,
+      doc_desc: docDesc,
+      questions: questions,
+    });
   };
 
   const showMoreOptions = (event) => {
@@ -306,7 +309,8 @@ const Questionform = (props) => {
                           >
                             {Array.from(
                               {
-                                length: maxSectionNumber - ques.sectionNumber + 1,
+                                length:
+                                  maxSectionNumber - ques.sectionNumber + 1,
                               },
                               (_, index) => (
                                 <MenuItem
@@ -314,7 +318,7 @@ const Questionform = (props) => {
                                   value="Text"
                                   onClick={() => {
                                     navigateToSection(
-                                      ques.sectionNumber-1,
+                                      ques.sectionNumber - 1,
                                       ques.sectionNumber + index
                                     ); //arg: from section, to section
                                   }}
@@ -346,7 +350,8 @@ const Questionform = (props) => {
                                   placeholder="Question"
                                   value={ques.questionText}
                                   onChange={(e) =>
-                                    changeSection(e.target.value, quesInd)}
+                                    changeSection(e.target.value, quesInd)
+                                  }
                                 ></input>
                               </div>
                             </AccordionDetails>
@@ -375,7 +380,7 @@ const Questionform = (props) => {
                                 </div>
                               )}
                               <div className="question-text">
-                                 {ques.questionText}
+                                {ques.questionText}
                                 {ques.options.map((op, optionInd) => (
                                   <div
                                     key={optionInd}
@@ -418,7 +423,8 @@ const Questionform = (props) => {
                                 style={{ marginBottom: "10px" }}
                               >
                                 {" "}
-                                Section {ques.sectionNumber} of {maxSectionNumber}{" "}
+                                Section {ques.sectionNumber} of{" "}
+                                {maxSectionNumber}{" "}
                               </div>
                             )}
                             <AccordionDetails className="add-question">
@@ -648,18 +654,22 @@ const Questionform = (props) => {
                     )}
                   </div>
                   <div className="question-edit">
-                    <AddCircleOutlineOutlinedIcon
-                      className="add-question-icon"
-                      onClick={() => {
-                        addNewQuestion();
-                      }}
-                    />
+                    <Tooltip title="Add new question">
+                      <AddCircleOutlineOutlinedIcon
+                        className="add-question-icon"
+                        onClick={() => {
+                          addNewQuestion();
+                        }}
+                      />
+                    </Tooltip>
+                    <Tooltip title="Add new section">
                     <TocIcon
                       className="add-section-icon"
                       onClick={() => {
                         addNewSection();
                       }}
                     />
+                    </Tooltip>
                   </div>
                 </div>
               </div>

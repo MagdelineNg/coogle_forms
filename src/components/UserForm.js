@@ -8,6 +8,7 @@ import { actionTypes } from "./reducer";
 
 function Userform() {
 //   const [totalQ, setTotalQ] = useState(1);
+  const [shortans, setshortans] = useState("")
 
   var quest = [];
   var navigate = useNavigate();
@@ -17,14 +18,13 @@ function Userform() {
   
   useEffect(() => {
     console.log('response: ', numOfResponses)
+    console.log('userForm questions: ', questions)
 
     questions.map((q) => {
-      if (!q.section){
         answer.push({
           question: q.questionText,
-          answer: " ",
+          answer: "",
         });
-      }
     });
     questions.map((q, qindex) => {
       if (!q.section){
@@ -46,6 +46,7 @@ function Userform() {
 
     answer[k].answer = option;
     setAnswer(answer);
+    setshortans(option)
   }
 
   function selectCheckbox(e, que, option) {
@@ -66,8 +67,9 @@ function Userform() {
 
   function submit() {
     answer.map((ele) => {
-      console.log(ele)
-      post_answer_data[ele.question] = ele.answer;
+      if (ele.answer){
+        post_answer_data[ele.question] = ele.answer;
+      }
     });
 
     console.log("userform.js post_answer_data: ", JSON.stringify(post_answer_data));
@@ -133,12 +135,12 @@ function Userform() {
                               <label>
                                 <input
                                   type={question.questionType}
-                                  name={qindex}
+                                  name={index}
                                   value={ques.optionText}
                                   className="form-check-input"
                                   required={question.required}
                                   style={{
-                                    margnLeft: "5px",
+                                    marginLeft: "5px",
                                     marginRight: "5px",
                                   }}
                                   onChange={(e) => {
@@ -155,8 +157,8 @@ function Userform() {
                               <label>
                                 <input
                                   type={question.questionType}
-                                  name={qindex}
-                                  value={ques.optionText}
+                                  name={index}
+                                  value={shortans}
                                   className="form-check-input"
                                   required={question.required}
                                   style={{
@@ -170,14 +172,13 @@ function Userform() {
                                     );
                                   }}
                                 />{" "}
-                                {ques.optionText}
                               </label>
                             )
                           ) : (
                             <label>
                               <input
                                 type={question.questionType}
-                                name={qindex}
+                                name={index}
                                 value={ques.optionText}
                                 className="form-check-input"
                                 required={question.required}

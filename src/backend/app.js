@@ -19,8 +19,6 @@ app.use(function (req, res, next) {
   next();
 });
 
-let workbook = new Excel.Workbook();
-const responseCsvPath = `./responses/small-sg.csv`;
 // if (fs.existsSync(responseCsvPath)) {
 //   // var worksheet = workbook.csv.getWorksheet(`small-sg`);
 

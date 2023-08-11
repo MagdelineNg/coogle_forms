@@ -4,7 +4,7 @@ import "./Formheader.css";
 import CenteredTabs from "./CenteredTabs";
 import { useStateValue } from "./StateProvider";
 import { actionTypes } from "./reducer";
-import { IconButton } from "@mui/material";
+import { IconButton, Tooltip } from "@mui/material";
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { useParams , useNavigate} from "react-router-dom";
 
@@ -36,7 +36,7 @@ const Formheader = (props) => {
             src={formLogo}
             alt="Return to main page"
             style={{ height: "45px", width: "40px" }}
-            onClick={() => {navigate('./')}}
+            onClick={() => {window.open('./')}}
           />
           <input
             type="text"
@@ -47,8 +47,11 @@ const Formheader = (props) => {
           ></input>
         </div>
         <div className="form-header-right">
-          <IconButton onClick={() => {window.open(`/${formId}/response`,'_blank', 'rel=noopener noreferrer')}}>
+          {/* <IconButton onClick={() => {window.open(`/${formId}/response`,'_blank', 'rel=noopener noreferrer')}}> */}
+          <IconButton onClick={() => {navigate(`/${formId}/response`)}}>
+            <Tooltip title="View user form">
             <VisibilityOutlinedIcon className="form-header-icon"/>
+            </Tooltip>
           </IconButton>
         </div>
       </div>

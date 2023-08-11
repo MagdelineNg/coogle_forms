@@ -13,6 +13,7 @@ const Mainbody = (props) => {
 
     if (request.data){
       let filenames = request.data;
+      console.log("get file names: ", filenames)
       setFileNames(filenames);
     }
   };
@@ -33,7 +34,7 @@ const Mainbody = (props) => {
         Recent forms
       </div>
       <div className="main-body-docs">
-        {fileNames.map((file) => (
+        {fileNames.map((file) => (file!=='.DS_Store' &&
           <div
             className="doc-card"
             onClick={() => {
