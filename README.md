@@ -33,7 +33,7 @@ Navigate to the directory where the Excel file is at(shown in "Responses" tab pa
 - Clone this repository or fork it
     - To clone this repository type git clone `https://github.com/MagdelineNg/coogle_forms.git` on your command line
     - To fork this repository, click fork button of this repository then type git clone `https://github.com/<your username>/coogle_forms.git`
-- Install all the dependencies of this project by typing `npm install`
+- Ensure that [Docker](https://docs.docker.com/engine/install/) is installed on your local computer. 
 - Run the `docker-compose.yaml` that builds the frontend and backend by typing `docker-compose up --build`
 - Visit `localhost:3000` on your browser
 
