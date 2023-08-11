@@ -15,7 +15,6 @@ const Formheader = (props) => {
   const formId = param.id
 
   const changeDocName = (newTitle) => {
-    console.log("change doc name: ", newTitle);
     dispatch({
       type: actionTypes.SET_DOC_NAME,
       docName: newTitle,

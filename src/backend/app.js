@@ -88,6 +88,27 @@ app.get("/get_all_filenames", (req, res) => {
   });
 });
 
+app.get("/:form_name/get_total_responses", (req, res) => {
+
+
+  const formName = req.params.form_name;
+  const responseFilePath = `./responses/${formName.replaceAll(" ", "-")}.xlsx`
+  console.log("be get total resp: ", responseFilePath)
+  if (fs.existsSync(responseFilePath)){
+    try{
+      const workbook = XLSX.readFile(responseFilePath);
+      let worksheet = workbook.Sheets[formName.replaceAll(" ", "-")];
+      let range = XLSX.utils.decode_range(worksheet['!ref']);
+      let totalRows = range.e.r - range.s.r + 1;
+      res.send(`${totalRows}`)
+    }catch(err){
+      console.log("Error reading total responses: ", err)
+    }
+  } else{
+    console.log("No response file")
+  }
+})
+
 app.post("/survey_response/:form_name", async (req, res) => {
   try {
     var formName = req.params.form_name;
