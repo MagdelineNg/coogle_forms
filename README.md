@@ -1,7 +1,7 @@
 # Coogle Forms
 A survey form system. (WIP)
 
-### Demo application
+## Demo application
 A customer can build a survey by clicking on "Blank".
 
 ![Survey layout](https://drive.google.com/uc?export=view&id=1NdTT1QW9DhprjX0OaQM5d3phTtqJtjgB)
@@ -16,11 +16,21 @@ Customer can save the form after layout is completed.
 Anyone can be directed to the user form and fill up their response. 
 ![View user form](https://drive.google.com/uc?export=view&id=1fr18xyWjHRanDzgEsRSCbMFag8_aKpcC)
 
-Click on "View in Excel" to view responses stored in an Excel file with the formId as its name(default).  -> WIP (excel is retrievable in `./src/backend/responses` now)
-![Recoard all responses](https://drive.google.com/uc?export=view&id=1aaH7Qs_yXIMa6-OyMGgwviF_5iTyeEWO)
+Click on "Responses" tab to view panel displaying total number of responses. Responses stored in an Excel file with the form name as its name. Excel file is retrievable in `./src/backend/responses` now)
+![Record all responses](https://drive.google.com/uc?export=view&id=1vOyM6lWa0GRHD-EZfOsykWGHD7yQshsU)
+
+Navigate to the directory where the Excel file is at(shown in "Responses" tab panel) to view all responses.
+![All past responses saved in Excel](https://drive.google.com/uc?export=view&id=1m84gn2sxhXGJR0r_4eQtpVgUkvh1Y5_k)
 
 </details>
 
+## Features
+- Create form
+- Add unlimited questions and maximum of 5 options per question
+- Delete and duplicating the question
+- Drag and Drop questions to sort them in the preferred order
+- Group questions by section
+- Submit response to the form
 
 ## Built using 
 - ReactJS and MaterialUI (frontend)
@@ -30,7 +40,7 @@ Click on "View in Excel" to view responses stored in an Excel file with the form
 - Clone this repository or fork it
     - To clone this repository type git clone `https://github.com/MagdelineNg/coogle_forms.git` on your command line
     - To fork this repository, click fork button of this repository then type git clone `https://github.com/<your username>/coogle_forms.git`
-- Install all the dependencies of this project by typing `npm install`
+- Ensure that [Docker](https://docs.docker.com/engine/install/) is installed on your local computer. 
 - Run the `docker-compose.yaml` that builds the frontend and backend by typing `docker-compose up --build`
 - Visit `localhost:3000` on your browser
 
