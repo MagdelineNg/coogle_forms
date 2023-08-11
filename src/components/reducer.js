@@ -10,7 +10,6 @@ export const actionTypes = {
     CHANGE_TYPE: "CHANGE_TYPE",
     SET_DOC_NAME: "SET_DOC_NAME",
     SET_DOC_DESC: "SET_DOC_DESC",
-    ADD_RESPONSE: "ADD_RESPONSE",
 }
 
 const reducer = (state=initialState, action) =>{

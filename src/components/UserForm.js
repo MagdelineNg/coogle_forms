@@ -6,7 +6,6 @@ import { useStateValue } from "./StateProvider";
 import axios from "axios";
 
 function Userform() {
-  //   const [totalQ, setTotalQ] = useState(1);
   const [shortans, setshortans] = useState("");
 
   var quest = [];
@@ -88,7 +87,7 @@ function Userform() {
             Please choose only 1 option for each question.
           </div>
           {questions.map((question, qindex) => (
-            <div>
+            <div key={qindex}>
               {!question.options ? (
                 <div className="user_form_section">
                   <Typography
