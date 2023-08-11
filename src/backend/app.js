@@ -114,7 +114,7 @@ app.post("/survey_response/:form_name", async (req, res) => {
     var formName = req.params.form_name;
     var fileName = formName.replaceAll(" ", "-");
     var formResponse = req.body;
-    const responseCsvPath = `./responses/${formName}.xlsx`;
+    const responseCsvPath = `./responses/${fileName}.xlsx`;
     if (fs.existsSync(responseCsvPath)) {
       const workbook = XLSX.readFile(responseCsvPath);
       const sheet = workbook.Sheets[fileName];
@@ -127,49 +127,8 @@ app.post("/survey_response/:form_name", async (req, res) => {
       //add multiple cell values to WS
       XLSX.utils.sheet_add_aoa(sheet, [answerAoa], { origin: -1 });
 
-      // var wb = XLSX.utils.book_new();
-      // XLSX.utils.book_append_sheet(wb, sheet, fileName);
-      // XLSX.writeFile(wb, "SheetJSAddAOA.xlsx");
+      XLSX.writeFile(workbook, responseCsvPath);
 
-      XLSX.writeFile(workbook, `./responses/${fileName}.xlsx`);
-
-      // XLSX.writeFile(workbook, `./responses/small-sg.csv`);
-      // XLSX.utils.sheet_to_csv(modifiedWs)
-
-      // workbook.csv.readFile(responseCsvPath).then(async function () {
-      //   // var worksheet = workbook.csv.getWorksheet(`${formName}`);
-      //   var worksheet = await workbook.csv.readFile(responseCsvPath);
-      //   // var lastRow = worksheet.lastRow;
-      //   // var getRowInsert = worksheet.getRow(++lastRow.number);
-      //   // getRowInsert.values = {
-      //   //   timestamp: date,
-      //   //   ...formResponse.answer_data,
-      //   // };
-      //   // console.log("getrowinsert: " + JSON.stringify(getRowInsert.values));
-      //   // getRowInsert.commit();
-      //   // getRowInsert.getCell('A').value = 'yo';
-      //   // getRowInsert.commit();
-      //   // getRowInsert.values = {
-      //   //   timestamp: date,
-      //   //   ...formResponse.answer_data,
-      //   // }
-      //   const rows = [
-      //     [new Date(), "test"], // row by array
-      //     [new Date(), "test 2"]
-      //   ];
-      //   // add new rows and return them as array of row objects
-      //   const newRows = worksheet.addRows(rows)
-      //   console.log({
-      //     timestamp: date,
-      //     ...formResponse.answer_data[0],
-      //   });
-      //   worksheet
-      //     .addRow({
-      //       timestamp: date,
-      //       ...formResponse.answer_data[0],
-      //     })
-      // });
-      // workbook.csv.writeFile(responseCsvPath);
     } else {
       console.log("answer_data if new file: ", formResponse.answer_data);
       var responseObj = {};
