@@ -4,9 +4,6 @@ services:
     container_name: api_c
     ports:
       - '9000:9000'
-    volumes: 
-      - ./api:/app
-      - ./api/node_modules
   frontend:
     build: ./
     container_name: frontend_c

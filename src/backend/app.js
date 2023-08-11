@@ -6,7 +6,6 @@ var bodyParser = require("body-parser");
 const Excel = require("exceljs");
 var XLSX = require("xlsx");
 
-const { QuestionAnswer, ElevatorSharp } = require("@mui/icons-material");
 const app = express();
 
 app.use(bodyParser.json());
@@ -20,42 +19,37 @@ app.use(function (req, res, next) {
   next();
 });
 
-
 let workbook = new Excel.Workbook();
 const responseCsvPath = `./responses/small-sg.csv`;
-if (fs.existsSync(responseCsvPath)) {
-  // var worksheet = workbook.csv.getWorksheet(`small-sg`);
+// if (fs.existsSync(responseCsvPath)) {
+//   // var worksheet = workbook.csv.getWorksheet(`small-sg`);
 
-  var currentdate = new Date(); 
-var datetime = "Last Sync: " + currentdate.getDate() + "/"
-                + (currentdate.getMonth()+1)  + "/" 
-                + currentdate.getFullYear() + " @ "  
-                + currentdate.getHours() + ":"  
-                + currentdate.getMinutes() + ":" 
-                + currentdate.getSeconds();
+//   var currentdate = new Date();
+// var datetime = "Last Sync: " + currentdate.getDate() + "/"
+//                 + (currentdate.getMonth()+1)  + "/"
+//                 + currentdate.getFullYear() + " @ "
+//                 + currentdate.getHours() + ":"
+//                 + currentdate.getMinutes() + ":"
+//                 + currentdate.getSeconds();
 
-  workbook.csv.readFile(responseCsvPath).then((workbook) => {
-    console.log(workbook.addRow({
-        timestamp: datetime,
-        'when is national day': '13 dec',
-      }))
-    // let worksheet = workbook.getWorksheet(`small-sg`);
-    
-    // console.log("worksheet: ", worksheet)
+//   workbook.csv.readFile(responseCsvPath).then((workbook) => {
+//     console.log(workbook.addRow({
+//         timestamp: datetime,
+//         'when is national day': '13 dec',
+//       }))
+//   })
 
-  })
+// var options = {
+//   dateFormat:
+//   dateUTC: boolean;
+//   sheetName: string;
+//   sheetId: number;
+// }
+//   workbook.csv.writeFile(, 	options)
 
-  var options = {
-    dateFormat: 
-    dateUTC: boolean;
-    sheetName: string;
-    sheetId: number;
-  }
-  workbook.csv.writeFile(, 	options)
+//   workbook.csv.writeFile(responseCsvPath);
 
-  workbook.csv.writeFile(responseCsvPath);
-
-}
+// }
 
 //post questions to db
 app.post("/add_questions/:doc_id", (req, res) => {
@@ -99,22 +93,30 @@ app.get("/get_all_filenames", (req, res) => {
 app.post("/survey_response/:form_name", async (req, res) => {
   try {
     var formName = req.params.form_name;
+    var fileName = formName.replaceAll(" ", "-");
     var formResponse = req.body;
-    var date = new Date();
-
-    let workbook = new Excel.Workbook();
-    const responseCsvPath = `./responses/${formName}.csv`;
+    const responseCsvPath = `./responses/${formName}.xlsx`;
     if (fs.existsSync(responseCsvPath)) {
-      const workbook = XLSX.readFile(`./responses/${fileName}.csv`);
+      const workbook = XLSX.readFile(responseCsvPath);
       const sheet = workbook.Sheets[fileName];
 
       //convert answer_data json to aoa
-      answerAoa = [new Date().toISOString(), ...Object.values(answer_data)];
-
+      const answerAoa = [
+        new Date().toISOString(),
+        ...Object.values(formResponse.answer_data[0]),
+      ];
       //add multiple cell values to WS
-      XLSX.utils.sheet_add_aoa(worksheet, [answerAoa], { origin: -1 });
+      XLSX.utils.sheet_add_aoa(sheet, [answerAoa], { origin: -1 });
 
-      XLSX.writeFile(workbook, `./responses/${fileName}.csv`);
+      // var wb = XLSX.utils.book_new();
+      // XLSX.utils.book_append_sheet(wb, sheet, fileName);
+      // XLSX.writeFile(wb, "SheetJSAddAOA.xlsx");
+
+      XLSX.writeFile(workbook, `./responses/${fileName}.xlsx`);
+
+      // XLSX.writeFile(workbook, `./responses/small-sg.csv`);
+      // XLSX.utils.sheet_to_csv(modifiedWs)
+
       // workbook.csv.readFile(responseCsvPath).then(async function () {
       //   // var worksheet = workbook.csv.getWorksheet(`${formName}`);
       //   var worksheet = await workbook.csv.readFile(responseCsvPath);
@@ -150,51 +152,30 @@ app.post("/survey_response/:form_name", async (req, res) => {
       // });
       // workbook.csv.writeFile(responseCsvPath);
     } else {
-      console.log("answer_data if new file: ", formResponse.answer_data[0]);
-      const worksheet = XLSX.utils.json_to_sheet(formResponse.answer_data[0]);
+      console.log("answer_data if new file: ", formResponse.answer_data);
+      var responseObj = {};
+      responseObj['Timestamp'] = new Date().toISOString();
+      responseObj = {...responseObj, ...formResponse.answer_data[0]};
+      // responseObj["timestamp"] = new Date().toISOString();
+      const formHeaders = ["Timestamp", ...Object.keys(formResponse.answer_data[0])];
+      console.log(formHeaders);
+
+      const worksheet = XLSX.utils.json_to_sheet([responseObj], {header: formHeaders});
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, `${formName}`);
+      XLSX.utils.book_append_sheet(workbook, worksheet, fileName);
 
       /* fix headers */
 
-      headers = Object.keys(answer_data);
-      console.log("headers for new file: ", header);
-      XLSX.utils.sheet_add_aoa(worksheet, [[headers]], { origin: "A1" });
+      // XLSX.utils.sheet_add_aoa(worksheet, [['Timestamp', ...formHeaders]], { origin: "A1" });
 
-      const max_width = answer_data.reduce(
-        (w, r) => Math.max(w, r.name.length),
-        10
-      );
-      worksheet["!cols"] = [{ wch: max_width }];
+      // const max_width = [formResponse.answer_data[0]].reduce(
+      //   (w, r) => Math.max(w, r.name.length),
+      //   10
+      // );
+      // worksheet["!cols"] = [{ wch: max_width }];
 
       /* create an XLSX file and try to save to Presidents.xlsx */
-      XLSX.writeFile(workbook, `./responses/${formName}.csv`);
-
-      // let worksheet = workbook.addWorksheet(`${formName}`);
-
-      // worksheet.columns = [
-      //   {
-      //     header: "Timestamp",
-      //     key: "timestamp",
-      //     style: { numFmt: "mm/dd/yyyy\\ h:mm:ss\\ AM/PM" },
-      //   },
-      //   ...formResponse.column,
-      // ];
-      // worksheet.columns.forEach((col) => {
-      //   col.width = col.header.length < 12 ? 12 : col.header.length;
-      // });
-
-      // formResponse.answer_data.forEach((ans, ind) => {
-      //   console.log("ans: ", ans);
-      //   worksheet.addRow({
-      //     timestamp: date,
-      //     ...ans,
-      //   });
-      // });
-
-      // worksheet.getRow(1).font = { bold: true };
-
-      // workbook.csv.writeFile(responseCsvPath);
+      XLSX.writeFile(workbook, `./responses/${fileName}.xlsx`);
     }
   } catch (err) {
     console.error("Error submitting response: " + err);

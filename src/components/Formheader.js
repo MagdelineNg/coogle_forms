@@ -2,18 +2,17 @@ import React, { useState, useEffect } from "react";
 import formLogo from "../img/google-forms-logo.png";
 import "./Formheader.css";
 import CenteredTabs from "./CenteredTabs";
-import Questionform from "./Questionform";
 import { useStateValue } from "./StateProvider";
 import { actionTypes } from "./reducer";
-import { useNavigate } from "react-router-dom";
 import { IconButton } from "@mui/material";
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-
+import { useParams , useNavigate} from "react-router-dom";
 
 const Formheader = (props) => {
   var [{ docName }, dispatch] = useStateValue();
 
-  const navigate = useNavigate();
+  const param = useParams()
+  const formId = param.id
 
   const changeDocName = (newTitle) => {
     console.log("change doc name: ", newTitle);
@@ -22,6 +21,8 @@ const Formheader = (props) => {
       docName: newTitle,
     });
   };
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     changeDocName(docName);
@@ -33,8 +34,9 @@ const Formheader = (props) => {
         <div className="form-header-left">
           <img
             src={formLogo}
-            alt=""
+            alt="Return to main page"
             style={{ height: "45px", width: "40px" }}
+            onClick={() => {navigate('./')}}
           />
           <input
             type="text"
@@ -45,7 +47,7 @@ const Formheader = (props) => {
           ></input>
         </div>
         <div className="form-header-right">
-          <IconButton onClick={() => {navigate("/response")}}>
+          <IconButton onClick={() => {window.open(`/${formId}/response`,'_blank', 'rel=noopener noreferrer')}}>
             <VisibilityOutlinedIcon className="form-header-icon"/>
           </IconButton>
         </div>

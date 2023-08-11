@@ -4,6 +4,7 @@ import Tab from "@mui/material/Tab";
 // import { TabPanel} from '@mui/lab';
 import TabList from "@mui/lab/TabList";
 import { TabContext, TabPanel } from "@mui/lab";
+import Responses from './Responses';
 import Questionform from "./Questionform";
 // import "./Tabs.css";
 
@@ -46,7 +47,9 @@ const CenteredTabs = (props) => {
         <TabPanel value="1" style={{padding:"0"}}>
           <Questionform />
         </TabPanel>
-        <TabPanel value="2">Panel two</TabPanel>
+        <TabPanel value="2" style={{backgroundColor:"#f4f4f9"}}>
+          <Responses/>
+        </TabPanel>
       </TabContext>
     </Box>
     // <Box sx={{ width: "100%" }}>
