@@ -1,7 +1,21 @@
 # Coogle Forms
 A survey form system. (WIP)
 
-### Demo application and feedback
+### Demo application
+A customer can build a survey by clicking on "Blank".
+
+![Survey layout](https://drive.google.com/uc?export=view&id=1NdTT1QW9DhprjX0OaQM5d3phTtqJtjgB)
+<details>
+<summary>
+Workflow of Coogle Forms
+</summary>
+    
+![Save form](https://drive.google.com/uc?export=view&id=1Km_-ax4Q7o4Zxh8l9XPWbPLn4GIqE69e)
+![View user form](https://drive.google.com/uc?export=view&id=1fr18xyWjHRanDzgEsRSCbMFag8_aKpcC)
+
+</details>
+
+
 ## Built using 
 - ReactJS and MaterialUI (frontend)
 - NodeJS, XLJS library (backend)
