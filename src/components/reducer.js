@@ -3,7 +3,6 @@ export const initialState = {
     questionTypes: "radio",
     docName: "Untitled form",
     docDesc: "Form description",
-    numOfResponses: 0
 }
 
 export const actionTypes = {
@@ -24,8 +23,6 @@ const reducer = (state=initialState, action) =>{
             return {...state, docName: action.docName}
         case actionTypes.SET_DOC_DESC:
             return{...state, docDesc: action.docDesc}
-        case actionTypes.ADD_RESPONSE:
-            return {...state, numOfResponses: action.numOfResponses}
         default:
             return state;
     }

@@ -4,35 +4,31 @@ import { useNavigate } from "react-router-dom";
 import "./UserForm.css";
 import { useStateValue } from "./StateProvider";
 import axios from "axios";
-import { actionTypes } from "./reducer";
 
 function Userform() {
-//   const [totalQ, setTotalQ] = useState(1);
-  const [shortans, setshortans] = useState("")
+  //   const [totalQ, setTotalQ] = useState(1);
+  const [shortans, setshortans] = useState("");
 
   var quest = [];
   var navigate = useNavigate();
   var [answer, setAnswer] = useState([]);
-  var [{ questions, docName, docDesc, numOfResponses }, dispatch] = useStateValue();
+  var [{ questions, docName, docDesc }] =
+    useStateValue();
 
-  
   useEffect(() => {
-    console.log('response: ', numOfResponses)
-    console.log('userForm questions: ', questions)
-
     questions.map((q) => {
-        answer.push({
-          question: q.questionText,
-          answer: "",
-        });
+      answer.push({
+        question: q.questionText,
+        answer: "",
+      });
     });
     questions.map((q, qindex) => {
-      if (!q.section){
+      if (!q.section) {
         quest.push({ header: q.questionText, key: q.questionText });
       }
     });
   }, []);
-  
+
   function selectRadio(que, option) {
     var k = answer.findIndex((ele) => ele.question === que);
 
@@ -46,7 +42,7 @@ function Userform() {
 
     answer[k].answer = option;
     setAnswer(answer);
-    setshortans(option)
+    setshortans(option);
   }
 
   function selectCheckbox(e, que, option) {
@@ -67,23 +63,16 @@ function Userform() {
 
   function submit() {
     answer.map((ele) => {
-      if (ele.answer){
+      if (ele.answer) {
         post_answer_data[ele.question] = ele.answer;
       }
     });
-
-    console.log("userform.js post_answer_data: ", JSON.stringify(post_answer_data));
 
     axios.post(`http://localhost:9000/survey_response/${docName}`, {
       column: quest,
       answer_data: [post_answer_data],
     });
-    
-    dispatch({
-      type: actionTypes.ADD_RESPONSE,
-      numOfResponses: numOfResponses+1
-    })
-    console.log("resp: ", numOfResponses);
+
     navigate(`/submitted`);
   }
 
@@ -95,7 +84,9 @@ function Userform() {
             <Typography style={{ fontSize: "26px" }}>{docName}</Typography>
             <Typography style={{ fontSize: "15px" }}>{docDesc}</Typography>
           </div>
-
+          <div className="user-form-instructions">
+            Please choose only 1 option for each question.
+          </div>
           {questions.map((question, qindex) => (
             <div>
               {!question.options ? (
@@ -111,7 +102,9 @@ function Userform() {
                   >
                     Section {question.sectionNumber}
                   </Typography>
-                  <div style={{marginTop: "15px"}}>{question.questionText}</div>
+                  <div style={{ marginTop: "15px" }}>
+                    {question.questionText}
+                  </div>
                 </div>
               ) : (
                 <div className="user_form_questions">
@@ -124,7 +117,14 @@ function Userform() {
                       fontSize: "14px",
                     }}
                   >
-                    {question.questionText}
+                    {question.required ? (
+                      <div className="user-form-question">
+                        <div className="required-qn">* </div>{" "}
+                        {question.questionText}{" "}
+                      </div>
+                    ) : (
+                      <div> {question.questionText} </div>
+                    )}
                   </Typography>
                   {question.options.map((ques, index) => (
                     <div key={index} style={{ marginBottom: "5px" }}>
@@ -147,7 +147,7 @@ function Userform() {
                                     selectCheckbox(
                                       e.target.checked,
                                       question.questionText,
-                                      ques.optionText, 
+                                      ques.optionText
                                     );
                                   }}
                                 />{" "}
@@ -186,7 +186,7 @@ function Userform() {
                                 onChange={() => {
                                   selectRadio(
                                     question.questionText,
-                                    ques.optionText,
+                                    ques.optionText
                                   );
                                 }}
                               />
@@ -212,7 +212,6 @@ function Userform() {
               Submit
             </Button>
           </div>
-
         </div>
       </div>
     </div>

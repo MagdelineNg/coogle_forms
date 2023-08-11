@@ -8,7 +8,6 @@ import { useStateValue } from "./StateProvider";
 export default function Responses() {
   const params = useParams();
   const formId = params.id;
-  const sheetsPath = `./backend/responses/${formId}.xlsx`;
   var [{ docName }] = useStateValue();
   const [totalRows, setTotalRows] = useState()
 
@@ -27,12 +26,13 @@ export default function Responses() {
     getTotalResponses();
   }, []);
 
+  const excelFile = docName.replace(" ", "-")
+
   return (
     <div className="responses">
-      <h2>{totalRows} responses</h2>
-      {totalRows && <a href="file:///src/backend/responses/survey-for-developers.xlsx">View in Excel</a>}
+      <h2>{totalRows-1} responses</h2>
+      {totalRows && <div>Please view the Excel responses in <b>./backend/responses/{excelFile}.xlsx</b></div>}
 
-      {/* {numOfResponses !== 0 && <a href={sheetsPath}>View in Excel</a>} */}
     </div>
   );
 }

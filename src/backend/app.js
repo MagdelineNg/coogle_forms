@@ -3,7 +3,6 @@ const express = require("express");
 const path = require("path");
 var cors = require("cors");
 var bodyParser = require("body-parser");
-const Excel = require("exceljs");
 var XLSX = require("xlsx");
 
 const app = express();
@@ -19,43 +18,11 @@ app.use(function (req, res, next) {
   next();
 });
 
-// if (fs.existsSync(responseCsvPath)) {
-//   // var worksheet = workbook.csv.getWorksheet(`small-sg`);
-
-//   var currentdate = new Date();
-// var datetime = "Last Sync: " + currentdate.getDate() + "/"
-//                 + (currentdate.getMonth()+1)  + "/"
-//                 + currentdate.getFullYear() + " @ "
-//                 + currentdate.getHours() + ":"
-//                 + currentdate.getMinutes() + ":"
-//                 + currentdate.getSeconds();
-
-//   workbook.csv.readFile(responseCsvPath).then((workbook) => {
-//     console.log(workbook.addRow({
-//         timestamp: datetime,
-//         'when is national day': '13 dec',
-//       }))
-//   })
-
-// var options = {
-//   dateFormat:
-//   dateUTC: boolean;
-//   sheetName: string;
-//   sheetId: number;
-// }
-//   workbook.csv.writeFile(, 	options)
-
-//   workbook.csv.writeFile(responseCsvPath);
-
-// }
-
 //post questions to db
 app.post("/add_questions/:doc_id", (req, res) => {
   var docData = JSON.stringify(req.body);
-  console.log(docData);
   var docId = req.params.doc_id;
   fs.writeFileSync(`files/${docId}.json`, docData);
-  console.log("written to db");
 });
 
 //get questions to display when form is open
@@ -93,7 +60,6 @@ app.get("/:form_name/get_total_responses", (req, res) => {
 
   const formName = req.params.form_name;
   const responseFilePath = `./responses/${formName.replaceAll(" ", "-")}.xlsx`
-  console.log("be get total resp: ", responseFilePath)
   if (fs.existsSync(responseFilePath)){
     try{
       const workbook = XLSX.readFile(responseFilePath);
@@ -130,13 +96,11 @@ app.post("/survey_response/:form_name", async (req, res) => {
       XLSX.writeFile(workbook, responseCsvPath);
 
     } else {
-      console.log("answer_data if new file: ", formResponse.answer_data);
       var responseObj = {};
       responseObj['Timestamp'] = new Date().toISOString();
       responseObj = {...responseObj, ...formResponse.answer_data[0]};
       // responseObj["timestamp"] = new Date().toISOString();
       const formHeaders = ["Timestamp", ...Object.keys(formResponse.answer_data[0])];
-      console.log(formHeaders);
 
       const worksheet = XLSX.utils.json_to_sheet([responseObj], {header: formHeaders});
       const workbook = XLSX.utils.book_new();
