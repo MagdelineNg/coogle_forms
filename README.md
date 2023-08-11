@@ -1,7 +1,27 @@
 # Coogle Forms
 A survey form system. (WIP)
 
-### Demo application and feedback
+### Demo application
+A customer can build a survey by clicking on "Blank".
+
+![Survey layout](https://drive.google.com/uc?export=view&id=1NdTT1QW9DhprjX0OaQM5d3phTtqJtjgB)
+<details>
+<summary>
+Workflow of Coogle Forms
+</summary>
+
+Customer can save the form after layout is completed.
+![Save form](https://drive.google.com/uc?export=view&id=1Km_-ax4Q7o4Zxh8l9XPWbPLn4GIqE69e)
+
+Anyone can be directed to the user form and fill up their response. 
+![View user form](https://drive.google.com/uc?export=view&id=1fr18xyWjHRanDzgEsRSCbMFag8_aKpcC)
+
+Click on "View in Excel" to view responses stored in an Excel file with the formId as its name(default).  -> WIP (excel is retrievable in `./src/backend/responses` now)
+![Recoard all responses](https://drive.google.com/uc?export=view&id=1aaH7Qs_yXIMa6-OyMGgwviF_5iTyeEWO)
+
+</details>
+
+
 ## Built using 
 - ReactJS and MaterialUI (frontend)
 - NodeJS, XLJS library (backend)
