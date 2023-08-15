@@ -2,7 +2,7 @@ const fs = require("fs");
 const express = require("express");
 const path = require("path");
 var cors = require("cors");
-var bodyParser = require("body-parser");
+var bodyParser = require("body-parser");  //to parse json from req.body
 var XLSX = require("xlsx");
 
 const app = express();
@@ -10,17 +10,17 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Origin", "*"); //allow any origin to access resource
   res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
+    "Access-Control-Allow-Headers", //http headers that can be used in req
+    "Origin, X-Requested-With, Content-Type, Accept"  //add cors header to responses to inform browser that server allows requests from diff origins
   );
   next();
 });
 
 //post questions to db
 app.post("/add_questions/:doc_id", (req, res) => {
-  var docData = JSON.stringify(req.body);
+  var docData = JSON.stringify(req.body);    
   var docId = req.params.doc_id;
   fs.writeFileSync(`files/${docId}.json`, docData);
 });
@@ -75,11 +75,13 @@ app.get("/:form_name/get_total_responses", (req, res) => {
   }
 })
 
+//collate user form responses into xlsx
 app.post("/survey_response/:form_name", async (req, res) => {
   try {
     var formName = req.params.form_name;
     var fileName = formName.replaceAll(" ", "-");
     var formResponse = req.body;
+
     const responseCsvPath = `./responses/${fileName}.xlsx`;
     if (fs.existsSync(responseCsvPath)) {
       const workbook = XLSX.readFile(responseCsvPath);
@@ -88,7 +90,7 @@ app.post("/survey_response/:form_name", async (req, res) => {
       //convert answer_data json to aoa
       const answerAoa = [
         new Date().toISOString(),
-        ...Object.values(formResponse.answer_data[0]),
+        ...Object.values(formResponse.answer_data),
       ];
       //add multiple cell values to WS
       XLSX.utils.sheet_add_aoa(sheet, [answerAoa], { origin: -1 });
@@ -98,9 +100,9 @@ app.post("/survey_response/:form_name", async (req, res) => {
     } else {
       var responseObj = {};
       responseObj['Timestamp'] = new Date().toISOString();
-      responseObj = {...responseObj, ...formResponse.answer_data[0]};
+      responseObj = {...responseObj, ...formResponse.answer_data};
       // responseObj["timestamp"] = new Date().toISOString();
-      const formHeaders = ["Timestamp", ...Object.keys(formResponse.answer_data[0])];
+      const formHeaders = ["Timestamp", ...formResponse.column];
 
       const worksheet = XLSX.utils.json_to_sheet([responseObj], {header: formHeaders});
       const workbook = XLSX.utils.book_new();
