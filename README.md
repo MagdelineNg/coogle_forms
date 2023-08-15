@@ -84,4 +84,4 @@ To handle a potential surge in traffic for a survey form system, frontend, backe
 
 ## Contact
 - Magdeline Ng - [magdelinenxl@gmail.com](mailto:magdelinenxl@gmail.com)
-- Project link: [https://github.com/kimlimjustin/google-form-clone](https://github.com/MagdelineNg/coogle_forms.git)
+- Project link: [https://github.com/MagdelineNg/coogle_forms.git](https://github.com/MagdelineNg/coogle_forms.git)
