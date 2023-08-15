@@ -44,6 +44,32 @@ Navigate to the directory where the Excel file is at(shown in "Responses" tab pa
 - Run the `docker-compose.yaml` that builds the frontend and backend by typing `docker-compose up --build`
 - Visit `localhost:3000` on your browser
 
+## Architectural decisions
+For each question, the default is a JSON object as such:
+``` 
+      {
+        questionText: "Untitled Question",
+        questionType: "radio",        //types: radio, checkbox, text
+        options: [{ optionText: "Option 1" }],  //maximum of 5 customised options
+        open: true,    //default is an expanded accordion
+        required: false,   //required questions are marked with * on the public form
+        section: false,    //whether it is a section or a question
+      },
+```
+I used React's useContext hook and a Redux store, as I needed to manage the state across multiple components. I created a reducer function for the values and actions to manage the state of the form variables and use these values using `useStateValue()` imported from `StateProvider.js`.
+```
+//In reducer.js: actions that can be dispatched by user's action
+export const actionTypes = {
+    SET_QUESTIONS: "SET_QUESTIONS",
+    CHANGE_TYPE: "CHANGE_TYPE",
+    SET_DOC_NAME: "SET_DOC_NAME",
+    SET_DOC_DESC: "SET_DOC_DESC",
+}
+```
+
+Although I had limited time to implement conditional logic for the questions, how I would approach the conditional logic is when the customer is designing the form, I will create a "Go to question x " dropdown, where x=all questions except itself. In the question object, there will be another key "skipToSection", where the value will be an integer x (the question that user will be redirected to if user chooses this option). When user clicks on the option, the input fields for all questions to be skipped will be disabled and the component will be greyed out to signal that those questions are skipped. 
+
+
 ## Stretch Goal B
 To handle a potential surge in traffic for a survey form system, frontend, backend, infrastructure, and scalability considerations should be taken into account. (non-exhaustive)
 
