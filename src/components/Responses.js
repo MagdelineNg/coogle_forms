@@ -30,7 +30,8 @@ export default function Responses() {
 
   return (
     <div className="responses">
-      <h2>{totalRows-1} responses</h2>
+      {totalRows===2 && (<h2>{totalRows-1} response</h2>)}
+      {totalRows>2 && (<h2>{totalRows-1} responses</h2>)}
       {totalRows && <div>Please view the Excel responses in <b>./backend/responses/{excelFile}.xlsx</b></div>}
 
     </div>

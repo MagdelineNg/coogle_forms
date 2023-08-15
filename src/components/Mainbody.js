@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Mainbody.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -13,12 +13,13 @@ const Mainbody = (props) => {
 
     if (request.data){
       let filenames = request.data;
-      console.log("get file names: ", filenames)
       setFileNames(filenames);
     }
   };
 
-  getFileNames();
+  useEffect(() => {
+    getFileNames();
+  }, [])
 
   const navigateTo = (docName) => {
     var fileName = docName.split(".");

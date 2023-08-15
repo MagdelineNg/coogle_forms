@@ -36,9 +36,9 @@ const Questionform = (props) => {
 
   const [questions, setQuestions] = useState([
     {
-      questionText: "Untitled Question",
-      questionType: "radio",
-      options: [{ optionText: "Option 1" }],
+      questionText: "",
+      questionType: "Radio",
+      options: [{ optionText: "" }],
       open: true,
       required: false,
       section: false,
@@ -52,8 +52,8 @@ const Questionform = (props) => {
     "Go to section based on answer",
   ];
 
-  const [docName, setDocName] = useState("Untitled Form");
-  const [docDesc, setDocDesc] = useState("Form description");
+  const [docName, setDocName] = useState("");
+  const [docDesc, setDocDesc] = useState("");
   let maxSectionNumber = 0;
 
   questions.forEach((question) => {
@@ -91,10 +91,29 @@ const Questionform = (props) => {
     addData();
   }, []);
 
+  useEffect(() => {
+    dispatch({
+      type: actionTypes.SET_QUESTIONS,
+      questions: questions,
+    });
+  }, [questions]);
+
   const commitToDB = () => {
     axios.post(`http://localhost:9000/add_questions/${id}`, {
       doc_name: docName,
       doc_desc: docDesc,
+      questions: questions,
+    });
+    dispatch({
+      type: actionTypes.SET_DOC_NAME,
+      docName: docName,
+    });
+    dispatch({
+      type: actionTypes.SET_DOC_DESC,
+      docDesc: docDesc,
+    });
+    dispatch({
+      type: actionTypes.SET_QUESTIONS,
       questions: questions,
     });
   };
@@ -150,7 +169,7 @@ const Questionform = (props) => {
     const numOfOptions = newQuestions[ind].options.length;
     if (numOfOptions < 5) {
       newQuestions[ind].options.push({
-        optionText: "Option " + (numOfOptions + 1),
+        optionText: "",
       });
       setQuestions(newQuestions);
     } else {
@@ -170,7 +189,7 @@ const Questionform = (props) => {
     expandCloseAll();
     let curQuestions = [...questions];
     // let newQuestion = curQuestions[i]  -> doesn't create new obj, just assigns ref to existing question obj in array, hence change made to newQ will also affect originalQ
-    let newQuestion = { ...curQuestions[quesInd] }; //use spread operator to create new question object with same properties without affecting original question
+    let newQuestion = JSON.parse(JSON.stringify(curQuestions[quesInd])); //create deep copy of obj -> create new question object with same properties without affecting original question
     setQuestions([...curQuestions, newQuestion]);
   }
 
@@ -193,9 +212,9 @@ const Questionform = (props) => {
     setQuestions([
       ...questions,
       {
-        questionText: "Question",
-        questionType: "radio",
-        options: [{ optionText: "Option 1" }],
+        questionText: "",
+        questionType: "Radio",
+        options: [{ optionText: "" }],
         open: true,
         required: false,
       },
@@ -332,7 +351,7 @@ const Questionform = (props) => {
                           >
                             <div className="question-boxes">
                               <AccordionDetails className="add-question">
-                                <div className="add-question-top">                                
+                                <div className="add-question-top">
                                   <input
                                     type="text"
                                     className="question"
@@ -418,7 +437,9 @@ const Questionform = (props) => {
                               )}
                               <AccordionDetails className="add-question">
                                 <div className="add-question-top">
-                                <div className="expanded-index">{indexObj[quesInd]}.</div>
+                                  <div className="expanded-index">
+                                    {indexObj[quesInd]}.
+                                  </div>
                                   <input
                                     type="text"
                                     className="question"
@@ -437,13 +458,14 @@ const Questionform = (props) => {
                                       color: "#5f6368",
                                       fontSize: "13px",
                                     }}
-                                    defaultValue=""
+                                    defaultValue="Radio"
+                                    value={ques.questionType}
                                   >
                                     <MenuItem
                                       id="text"
                                       value="Text"
                                       onClick={() => {
-                                        addQuestionType(quesInd, "text");
+                                        addQuestionType(quesInd, "Text");
                                       }}
                                     >
                                       <SubjectIcon
@@ -455,7 +477,7 @@ const Questionform = (props) => {
                                       id="checkbox"
                                       value="Checkbox"
                                       onClick={() => {
-                                        addQuestionType(quesInd, "checkbox");
+                                        addQuestionType(quesInd, "Checkbox");
                                       }}
                                     >
                                       <CheckBoxOutlinedIcon
@@ -467,7 +489,7 @@ const Questionform = (props) => {
                                       id="radio"
                                       value="Radio"
                                       onClick={() => {
-                                        addQuestionType(quesInd, "radio");
+                                        addQuestionType(quesInd, "Radio");
                                       }}
                                     >
                                       <RadioButtonCheckedIcon
@@ -482,7 +504,7 @@ const Questionform = (props) => {
                                     className="add-question-body"
                                     key={optionInd}
                                   >
-                                    {ques.questionType !== "text" ? (
+                                    {ques.questionType !== "Text" ? (
                                       <input
                                         type={ques.questionType}
                                         style={{ marginRight: "10px" }}
@@ -496,7 +518,11 @@ const Questionform = (props) => {
                                       <input
                                         type="text"
                                         className="text-input"
-                                        placeholder="option"
+                                        placeholder={
+                                          ques.questionType !== "Text"
+                                            ? `Option ${optionInd + 1}`
+                                            : "Type your answer here..."
+                                        }
                                         value={op.optionText}
                                         onChange={(e) => {
                                           changeOptionValue(
@@ -518,12 +544,13 @@ const Questionform = (props) => {
                                   </div>
                                 ))}
                                 <div>
-                                  {ques.options.length < 5 ? (
+                                  {ques.options.length < 5 &&
+                                  ques.questionType !== "Text" ? (
                                     <div className="add-question-body">
                                       <FormControlLabel
                                         disabled
                                         control={
-                                          ques.questionType !== "text" ? (
+                                          ques.questionType !== "Text" ? (
                                             <input
                                               type={ques.questionType}
                                               style={{
@@ -685,14 +712,26 @@ const Questionform = (props) => {
               style={{ color: "black" }}
               placeholder="Untitled form"
               value={docName}
-              onChange={(e) => setDocName(e.target.value)}
+              onChange={(e) => {
+                setDocName(e.target.value);
+                dispatch({
+                  type: actionTypes.SET_DOC_NAME,
+                  docName: e.target.value,
+                });
+              }}
             ></input>
             <input
               type="text"
               className="question-form-top-desc"
               placeholder="Form description"
               value={docDesc}
-              onChange={(e) => setDocDesc(e.target.value)}
+              onChange={(e) => {
+                setDocDesc(e.target.value);
+                dispatch({
+                  type: actionTypes.SET_DOC_DESC,
+                  docDesc: e.target.value,
+                });
+              }}
             ></input>
           </div>
         </div>

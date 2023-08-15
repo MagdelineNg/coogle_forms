@@ -35,7 +35,7 @@ const Formheader = (props) => {
             src={formLogo}
             alt="Return to main page"
             style={{ height: "45px", width: "40px" }}
-            onClick={() => {window.open('./')}}
+            onClick={() => {window.open('../')}}
           />
           <input
             type="text"

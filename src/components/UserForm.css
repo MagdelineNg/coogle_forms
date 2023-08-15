@@ -70,3 +70,13 @@
 .user-form-question{
   display: flex;
 }
+
+input[type='radio'] { 
+  transform: scale(1.5); 
+}
+
+input[type='checkbox'] { 
+  transform: scale(1.5); 
+}
+
+

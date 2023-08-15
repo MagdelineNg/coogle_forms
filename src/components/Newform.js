@@ -14,9 +14,9 @@ const NewForm = () => {
 
     var question = [
       {
-        questionText: "Untitled Question",
-        questionType: "radio",
-        options: [{ optionText: "Option 1" }],
+        questionText: "",
+        questionType: "Radio",
+        options: [{ optionText: "" }],
         open: true,
         required: false,
         section: false,
@@ -24,8 +24,8 @@ const NewForm = () => {
     ];
 
     axios.post(`http://localhost:9000/add_questions/${id}`, {
-      doc_name: "Untitled form",
-      doc_desc: "Form description",
+      doc_name: "",
+      doc_desc: "",
       questions: question,
     });
 
