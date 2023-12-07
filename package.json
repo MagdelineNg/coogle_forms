@@ -10,7 +10,7 @@
     "@mui/material": "^5.14.3",
     "@reduxjs/toolkit": "^1.9.5",
     "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
+    "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.4.0",
     "exceljs": "^4.3.0",
